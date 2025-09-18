@@ -25,8 +25,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   return (
-    <div className="product-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform duration-300">
-      {/* Product Image and Overlay Actions */}
+    <div className="product-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 flex flex-col">
+      {/* Product Image */}
       <div className="product-image relative">
         <Image
           src={product.imageUrl}
@@ -35,7 +35,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           height={400}
           className="w-full h-64 object-cover transition-transform duration-300"
         />
-        {/* Overlay buttons for hover state */}
+
+        {/* Overlay buttons */}
         <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
           <button
             onClick={() => quickView.openModal(product)}
@@ -53,17 +54,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
 
       {/* Product Details */}
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
-          {product.name}
-        </h3>
-        {product.description && (
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            {product.description}
-          </p>
-        )}
-        <div className="flex justify-between items-center">
-          <span className="text-2xl font-bold text-gray-800 dark:text-white">
+      <div className="p-6 flex flex-col flex-1">
+        {/* Nama + Deskripsi */}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+              {product.description}
+            </p>
+          )}
+        </div>
+
+        {/* Harga + Button (selalu di bawah) */}
+        <div className="mt-auto flex justify-between items-center">
+          <span className="text-lg font-bold text-gray-800 dark:text-white">
             Rp {product.price.toLocaleString('id-ID')}
           </span>
           <button

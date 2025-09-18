@@ -1,10 +1,9 @@
-// src/components/product-list.tsx
-
 'use client';
 
 import { useState } from 'react';
 import { ProductCard } from './product-card';
 import { Product } from '../lib/types';
+import { useRouter } from 'next/navigation';
 
 type Category = "all" | "clothing" | "accessories" | "shoes" | "Coffee" | "Tea";
 type SortBy = "default" | "price-low" | "price-high" | "name";
@@ -17,33 +16,42 @@ interface ProductListProps {
 export const ProductList = ({ initialProducts, initialTopSelling }: ProductListProps) => {
   const [category, setCategory] = useState<Category>("all");
   const [sortBy, setSortBy] = useState<SortBy>("default");
+  const router = useRouter();
 
-  const filteredProducts = initialProducts.filter(p => category === "all" || p.category.toLowerCase() === category.toLowerCase());
-  
+  const filteredProducts = initialProducts.filter(
+    (p) => category === "all" || p.category.toLowerCase() === category.toLowerCase()
+  );
+
   const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === 'price-low') return a.price - b.price;
-    if (sortBy === 'price-high') return b.price - a.price;
-    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    if (sortBy === "price-low") return a.price - b.price;
+    if (sortBy === "price-high") return b.price - a.price;
+    if (sortBy === "name") return a.name.localeCompare(b.name);
     return 0;
   });
 
   return (
     <>
+      {/* Top Selling */}
       <section id="top-selling" className="py-20 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">🔥 Top Selling</h2>
+          <h2 className="text-4xl font-bold text-center text-gray-800 dark:text-white mb-12">
+            🔥 Top Selling
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {initialTopSelling.map(product => (
+            {initialTopSelling.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
       </section>
 
+      {/* All Products */}
       <section id="products" className="py-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center mb-12 space-y-4 md:space-y-0">
-            <h2 className="text-4xl font-bold text-gray-800 dark:text-white">OUR PRODUCTS</h2>
+            <h2 className="text-4xl font-bold text-gray-800 dark:text-white">
+              All Products
+            </h2>
             <div className="flex space-x-4">
               <select
                 value={category}
@@ -64,13 +72,24 @@ export const ProductList = ({ initialProducts, initialTopSelling }: ProductListP
                 <option value="price-high">Price: High to Low</option>
                 <option value="name">Name</option>
               </select>
+
+              
             </div>
           </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {sortedProducts.map(product => (
+            {sortedProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+          <div className ="flex justify-center items-center mt-12">
+          <button
+                onClick={() => router.push('/all-products')}
+                className=" px-6 py-5 rounded-full bg-gray-800 text-white dark:bg-white dark:text-gray-800 font-semibold hover:scale-105 transition-transform duration-300 "
+              >
+                Show All Products →
+              </button>
+              </div>
         </div>
       </section>
     </>

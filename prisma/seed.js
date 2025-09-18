@@ -58,82 +58,61 @@ async function main() {
     },
   });
 
-  // Buat produk fashion
-  const product1 = await prisma.product.create({
-    data: {
-      name: 'Kaos Oversize Pria',
-      description: 'Kaos oversize bahan cotton premium, nyaman dipakai sehari-hari.',
-      price: 120000,
-      category: 'Clothing',
-      imageUrl:
-        'https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=600',
-      topSelling: true,
-      sellerId: seller1.id,
-    },
+  // Kategori fashion
+  const categories = ['Clothing', 'Footwear', 'Bags', 'Accessories'];
+
+  // Gambar fashion contoh
+  const imageUrls = [
+    'https://images.pexels.com/photos/6311392/pexels-photo-6311392.jpeg?auto=compress&cs=tinysrgb&w=600', // kaos
+    'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=600', // sneakers
+    'https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=600', // tas
+    'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=600', // jam tangan
+    'https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&cs=tinysrgb&w=600', // jaket
+    'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=600', // kemeja
+  ];
+
+  // Buat 100 produk fashion otomatis
+  const productsData = Array.from({ length: 100 }).map((_, i) => {
+    const category = categories[i % categories.length];
+    const sellerId = i % 2 === 0 ? seller1.id : seller2.id;
+    const price = Math.floor(Math.random() * (500000 - 80000) + 80000); // 80rb - 500rb
+    const imageUrl = imageUrls[i % imageUrls.length];
+
+    return {
+      name: `${category} Fashion Item ${i + 1}`,
+      description: `Produk ${category.toLowerCase()} fashion terbaru dengan kualitas premium. Cocok untuk gaya sehari-hari maupun acara khusus.`,
+      price,
+      category,
+      imageUrl,
+      topSelling: i % 10 === 0, // setiap 10 produk jadi topSelling
+      sellerId,
+    };
   });
 
-  const product2 = await prisma.product.create({
-    data: {
-      name: 'Sepatu Sneakers Putih',
-      description: 'Sneakers putih klasik, cocok dipadukan dengan berbagai outfit.',
-      price: 350000,
-      category: 'Footwear',
-      imageUrl:
-        'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg?auto=compress&cs=tinysrgb&w=600',
-      sellerId: seller1.id,
-    },
-  });
-
-  const product3 = await prisma.product.create({
-    data: {
-      name: 'Tas Tote Kulit Wanita',
-      description: 'Tas tote kulit elegan untuk aktivitas sehari-hari.',
-      price: 450000,
-      category: 'Bags',
-      imageUrl:
-        'https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&cs=tinysrgb&w=600',
-      topSelling: true,
-      sellerId: seller2.id,
-    },
-  });
-
-  const product4 = await prisma.product.create({
-    data: {
-      name: 'Jam Tangan Minimalis',
-      description: 'Jam tangan gaya minimalis dengan strap kulit.',
-      price: 280000,
-      category: 'Accessories',
-      imageUrl:
-        'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?auto=compress&cs=tinysrgb&w=600',
-      sellerId: seller2.id,
-    },
+  await prisma.product.createMany({
+    data: productsData,
   });
 
   // Buat order sample
-  await prisma.order.create({
-    data: {
-      clientId: client1.id,
-      total: product1.price + product3.price,
-      items: {
-        create: [
-          { productId: product1.id, quantity: 1 },
-          { productId: product3.id, quantity: 1 },
-        ],
-      },
-    },
-  });
+  const sampleProduct1 = await prisma.product.findFirst();
+  const sampleProduct2 = await prisma.product.findFirst({ skip: 1 });
 
-  await prisma.order.create({
-    data: {
-      clientId: client2.id,
-      total: product2.price,
-      items: {
-        create: [{ productId: product2.id, quantity: 1 }],
+  if (sampleProduct1 && sampleProduct2) {
+    await prisma.order.create({
+      data: {
+        clientId: client1.id,
+        total: sampleProduct1.price + sampleProduct2.price,
+        items: {
+          create: [
+            { productId: sampleProduct1.id, quantity: 1 },
+            { productId: sampleProduct2.id, quantity: 1 },
+          ],
+        },
       },
-    },
-  });
+    });
+  }
 
-  console.log('✅ Seeder fashion berhasil jalan!');
+  console.log('✅ Seeder 100 produk fashion berhasil dibuat!');
 }
 
 main()

@@ -30,7 +30,7 @@ export const Header = () => {
         <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300">
             <div className={navClasses}>
                 <div className="flex items-center justify-between space-x-8">
-                    <Link href="#home">
+                    <Link href="/">
                         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">LuxShion</h1>
                     </Link>
 
