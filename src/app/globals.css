@@ -108,4 +108,40 @@ body {
     transform: translateY(0);
 }
 
-/* Add other custom styles here from the original HTML file */
+.container.active .form-box.register {
+    right: 50%;
+    visibility: visible;
+    opacity: 1;
+}
+
+.form-box.register {
+    right: 0;
+    transition: .6s ease-in-out 1.2s;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.container.active .form-box {
+    right: 50%;
+}
+
+.container.active .form-box.login {
+    right: 0;
+    transition: .6s ease-in-out;
+}
+
+.container .toggle-box::before {
+    content: '';
+    position: absolute;
+    left: -150%;
+    width: 250%;
+    height: 100%;
+    background: #7494ec;
+    border-radius: 150px;
+    z-index: 2;
+    transition: 1.8s ease-in-out;
+}
+
+.container.active .toggle-box::before {
+    left: 50%;
+}

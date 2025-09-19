@@ -4,6 +4,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import { useCart } from '../hooks/use-cart';
 import { useModal } from '../hooks/use-modal';
 import { useTheme } from '../hooks/use-theme';
+import { useAuth } from '../hooks/use-auth';
 
 // Definisi tipe context
 interface AppContextType {
@@ -11,7 +12,8 @@ interface AppContextType {
   quickView: ReturnType<typeof useModal>;
   mobileMenu: ReturnType<typeof useModal>;
   theme: ReturnType<typeof useTheme>;
-    cartSidebar: ReturnType<typeof useModal>; 
+  cartSidebar: ReturnType<typeof useModal>;
+  auth: ReturnType<typeof useAuth>;
 }
 
 // Buat context dengan default undefined
@@ -27,9 +29,10 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const mobileMenu = useModal();
   const theme = useTheme();
   const cartSidebar = useModal(); 
+  const auth = useAuth(); 
 
   return (
-    <AppContext.Provider value={{ cart, quickView, mobileMenu, theme, cartSidebar}}>
+    <AppContext.Provider value={{ cart, quickView, mobileMenu, theme, cartSidebar, auth }}>
       {children}
     </AppContext.Provider>
   );

@@ -23,7 +23,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       icon: '✅',
     });
   };
-
   return (
     <div className="product-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-transform duration-300 flex flex-col">
       {/* Product Image */}
