@@ -20,11 +20,6 @@ export default async function HomePage() {
       <Header />
       <main className="flex-1">
         <Hero />
-        {/*
-          ProductList adalah komponen klien yang menerima data dari server.
-          Nama prop 'initialProducts' dan 'initialTopSelling' harus sesuai
-          dengan yang didefinisikan di komponen ProductList.
-        */}
         <ProductList
           initialProducts={products}
           initialTopSelling={topSellingProducts}
@@ -33,10 +28,6 @@ export default async function HomePage() {
         <Contact />
       </main>
       <Footer />
-      {/*
-        Modals dan Sidebar adalah komponen klien yang dipanggil di sini.
-        Mereka akan dikendalikan oleh state global dari AppContext.
-      */}
       <QuickViewModal />
       <MobileMenu />
       <SidebarCart />

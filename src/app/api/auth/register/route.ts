@@ -1,47 +1,41 @@
-// src/app/api/auth/register/route.ts
-
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import {prisma} from '../../../lib/prisma';
-import { Role } from '@prisma/client';
+import prisma from '../../../lib/prisma';
 
-export async function POST(request: Request) {
-  const { name, email, password, role } = await request.json();
+export async function POST(req: Request) {
+  try {
+    const { name, email, password, role } = await req.json();
 
-  // Validate the role
-  if (!Object.values(Role).includes(role)) {
-    return NextResponse.json({ message: 'Invalid role provided' }, { status: 400 });
+    // cek email sudah ada atau belum
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json({ message: 'Email sudah terdaftar' }, { status: 400 });
+    }
+
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // simpan user baru
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role,
+      },
+    });
+
+    return NextResponse.json({
+      message: 'Registrasi berhasil',
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ message: 'Terjadi kesalahan server' }, { status: 500 });
   }
-
-  // Check if user already exists
-  const existingUser = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (existingUser) {
-    return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
-  }
-
-  // Hash password for security
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  // Create new user with the specified role
-  const newUser = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      role,
-    },
-  });
-
-  return NextResponse.json({
-    user: {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role,
-    },
-    message: 'User registered successfully',
-  }, { status: 201 });
 }

@@ -1,62 +1,75 @@
-// src/hooks/use-auth.ts
-
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-export type UserRole = 'CLIENT' | 'SELLER' | 'ADMIN';
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: 'ADMIN' | 'SELLER' | 'CLIENT';
+}
 
-export const useAuth = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ id: number; name: string; role: UserRole } | null>(null);
+export function useAuth() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/login', {
+      const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        setIsLoggedIn(true);
-        setUser(data.user);
-        return data.user;
-      } else {
-        throw new Error(data.message);
+      if (!res.ok) {
+        throw new Error('Login gagal');
       }
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
+
+      const data = await res.json();
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+
+      return data.user;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const register = async (name: string, email: string, password: string, role: UserRole) => {
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: string
+  ): Promise<void> => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/auth/register', {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role }),
       });
-      const data = await response.json();
 
-      if (response.ok) {
-        return data;
-      } else {
-        throw new Error(data.message);
+      if (!res.ok) {
+        throw new Error('Registrasi gagal');
       }
-    } catch (error) {
-      console.error('Registration failed:', error);
-      throw error;
+
+      await res.json();
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = () => {
-    setIsLoggedIn(false);
     setUser(null);
+    localStorage.removeItem('token');
   };
 
-  return { isLoggedIn, user, login, register, logout };
-};
+  return {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+  };
+}

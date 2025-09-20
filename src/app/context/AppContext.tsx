@@ -7,7 +7,7 @@ import { useTheme } from '../hooks/use-theme';
 import { useAuth } from '../hooks/use-auth';
 
 // Definisi tipe context
-interface AppContextType {
+export interface AppContextType {
   cart: ReturnType<typeof useCart>;
   quickView: ReturnType<typeof useModal>;
   mobileMenu: ReturnType<typeof useModal>;
@@ -28,11 +28,20 @@ export const AppProvider = ({ children }: AppProviderProps) => {
   const quickView = useModal();
   const mobileMenu = useModal();
   const theme = useTheme();
-  const cartSidebar = useModal(); 
-  const auth = useAuth(); 
+  const cartSidebar = useModal();
+  const auth = useAuth();
 
   return (
-    <AppContext.Provider value={{ cart, quickView, mobileMenu, theme, cartSidebar, auth }}>
+    <AppContext.Provider
+      value={{
+        cart,
+        quickView,
+        mobileMenu,
+        theme,
+        cartSidebar,
+        auth,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
@@ -42,7 +51,9 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 export const useAppContext = (): AppContextType => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error('useAppContext must be used within an AppProvider');
+    throw new Error(
+      '❌ useAppContext hanya boleh digunakan di dalam <AppProvider>'
+    );
   }
   return context;
 };

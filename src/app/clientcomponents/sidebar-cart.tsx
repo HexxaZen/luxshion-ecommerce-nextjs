@@ -3,14 +3,24 @@
 import { FaTimes, FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 import clsx from 'clsx';
 import { useAppContext } from '../context/AppContext';
+import { useRouter } from 'next/navigation';
 
 export const SidebarCart = () => {
     const { cart, cartSidebar } = useAppContext();
-
+    const router = useRouter();
+    const { auth } = useAppContext();
     const sidebarClasses = clsx(
         "fixed right-0 top-0 h-full w-96 max-w-[90vw] bg-white dark:bg-gray-800 shadow-xl z-50 transition-transform duration-300",
-        cartSidebar.isOpen ? 'translate-x-0' : 'translate-x-full' // ✅ dibalik biar logis
+        cartSidebar.isOpen ? 'translate-x-0' : 'translate-x-full'
     );
+    const handleCheckout = () => {
+        if (!auth.user){
+            localStorage.setItem('redirectAfterLogin', '/');
+            router.push('/auth');
+        }else{
+            router.push('/');
+        }
+    }
 
     return (
         <div id="cart-sidebar" className={sidebarClasses}>
@@ -56,7 +66,10 @@ export const SidebarCart = () => {
                     <span className="text-lg font-semibold text-gray-800 dark:text-white">Total:</span>
                     <span id="cart-total" className="text-lg font-bold text-gray-800 dark:text-white">Rp.{cart.totalAmount.toFixed(2)}</span>
                 </div>
-                <button className="w-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 py-3 rounded-lg font-semibold hover:scale-105 transition-transform duration-300">
+                <button
+                    onClick={handleCheckout}
+                    className="w-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 py-3 rounded-lg font-semibold hover:scale-105 transition-transform duration-300"
+                >
                     Checkout
                 </button>
             </div>
